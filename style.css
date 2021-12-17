@@ -43,8 +43,8 @@ body {
 #bullet {
 	background: url("images/bullets.png") no-repeat;
  	position: absolute;
-    left: 62px;
-    top: 10px;
+    left: 27px;
+    top: -11px;
     width: 65px;
     height: 65px;
     background-size: cover;

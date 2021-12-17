@@ -1,5 +1,4 @@
-let countShot = 0;
-let bulletPosition = random (1, 6); 
+let countShot = 0; 
 let btnShot = document.querySelector('#shot');
 let currentPlayer = 1;
 let baraban = document.querySelector('#baraban');
@@ -7,28 +6,26 @@ let baraban = document.querySelector('#baraban');
 btnShot.onclick = start;
 
 function start () {
-    btnShot.className = 'off';
+    disableButton();
+    
     let bullet = document.querySelector('#bullet');
         bullet.style.display = 'block';
     let revolver = document.querySelector('#revolver');
         revolver.style.display = 'block'; 
-    
-    btnShot.onclick = ''; 
 
     let rotate = 0;
     let timer = setInterval(function(){
         rotate += 10;
-        baraban.style.transform = 'rotate('+rotate+'deg)';
+        rotateBaraban(rotate);
         if(rotate > 300) {
             bullet.style.display = 'none';
         }
         if (rotate === 720) {
             clearInterval(timer);
             btnShot.innerText = 'Make a shot!';
-            btnShot.onclick = shot;
-            btnShot.className = '';
+            enableButton(shot);
         }
-    }, 10);
+    }, 50);
    
 }
 
@@ -36,11 +33,16 @@ function random (min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-let rotateBaraban = 0;
 function shot() {
-    countShot += 1;
+    disableButton();
+    let barabanPosition = 0;
+    countShot++;
+    
+    const bulletPosition = random (1, 6);
 
-    if (bulletPosition === countShot) {
+    const winPosition = countShot <= 6 ? countShot : countShot % 6;
+
+    if (bulletPosition === winPosition) {
         let blood = document.createElement('div');
             blood.id = 'blood';
             blood.className = `player${currentPlayer}`;
@@ -53,37 +55,55 @@ function shot() {
             rotationRight();
             currentPlayer = 2;
         } else {
-            rotationLeft ();
+            rotationLeft();
             currentPlayer = 1;
         }
-        rotateBaraban += 60;
-        let rotate = rotateBaraban;
+        barabanPosition += 60;
+        let rotate = barabanPosition;
         let timer = setInterval(function() {
-            rotate += 1;
-            baraban.style.transform = 'rotate('+rotate+'60deg)';
-            if (rotate === rotateBaraban + 60) {
-               clearInterval(timer);
-               rotateBaraban = rotate;
+            rotate += 10;
+            rotateBaraban(rotate);
+
+            if (rotate === barabanPosition + 300) {
+                clearInterval(timer);
+                barabanPosition = rotate;
+                enableButton(shot);
            }
-        }, 10);
+        }, 50);
         
-    }    
+    }   
+}
+
+function enableButton(onclick) {
+    btnShot.onclick = onclick;
+    btnShot.className = '';
+}
+
+function disableButton() {
+    btnShot.className = 'off';
+    btnShot.onclick = '';
 }
 
 let revolver = document.querySelector('#revolver');
 function rotationRight () {
-    revolver.style.background = 'url("/images/revolver-right.png")';
+    revolver.style.background = 'url("./images/revolver-right.png")';
 }
-rotationRight();
 
 function rotationLeft () {
-    revolver.style.background = 'url("/images/revolver-left.png")';
+    revolver.style.background = 'url("./images/revolver-left.png")';
 }
-rotationLeft();
+
+function rotateBaraban(rotate) {
+    baraban.style.transform = `rotate(${rotate}deg)`;
+}
 
 function endGame () {
+    rotateBaraban(0); // reset bullet position
+    let bullet = document.querySelector('#bullet');
+        bullet.style.display = 'block';
+
     btnShot.innerText = 'Restart';
-    btnShot.onclick = restart   ;
+    enableButton(restart);
     alert ('Game Over!');
 }
 
